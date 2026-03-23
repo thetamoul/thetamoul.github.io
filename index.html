@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>French with Tamoul — Lesson Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased;scroll-behavior:smooth}
+:root{
+  --grad:linear-gradient(135deg,#7c3aed 0%,#a855f7 50%,#ec4899 100%);
+  --purple:#7c3aed;--bg:#f5f3ff;--surface:#fff;--surface-2:#fafafa;
+  --text:#1e1b4b;--text-muted:#6b7280;--text-faint:#9ca3af;
+  --border:rgba(124,58,237,0.12);
+  --shadow-sm:0 2px 8px rgba(124,58,237,0.08);
+  --shadow-md:0 8px 24px rgba(124,58,237,0.14);
+  --radius:1rem;--radius-full:9999px;
+  --font-body:'Nunito Sans',sans-serif;--font-display:'Nunito',sans-serif;
+}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100dvh}
+a{text-decoration:none;color:inherit}
+img{display:block;max-width:100%}
+
+header{background:var(--grad);padding:3rem 1.5rem 5rem;text-align:center;position:relative;overflow:hidden}
+header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(255,255,255,0.08) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(255,255,255,0.06) 0%,transparent 50%)}
+.header-inner{position:relative;z-index:1;max-width:700px;margin:0 auto}
+.logo-wrap{display:flex;align-items:center;justify-content:center;gap:.75rem;margin-bottom:1.5rem}
+.logo-text{font-family:var(--font-display);font-weight:900;font-size:1.25rem;color:#fff}
+.logo-sub{font-size:.8rem;font-weight:600;color:rgba(255,255,255,.75);letter-spacing:.05em;text-transform:uppercase}
+.hero-badge{display:inline-block;background:rgba(255,255,255,.2);color:#fff;font-family:var(--font-display);font-size:.75rem;font-weight:700;padding:.3rem .9rem;border-radius:var(--radius-full);letter-spacing:.08em;text-transform:uppercase;margin-bottom:1rem;border:1px solid rgba(255,255,255,.3)}
+header h1{font-family:var(--font-display);font-weight:900;font-size:clamp(2rem,5vw,3.2rem);color:#fff;line-height:1.1;margin-bottom:.75rem}
+header h1 span{color:#fde68a}
+header p{color:rgba(255,255,255,.85);font-size:1.05rem;max-width:52ch;margin:0 auto 1.5rem}
+.header-stats{display:flex;justify-content:center;gap:2rem;flex-wrap:wrap}
+.stat{color:#fff;text-align:center}
+.stat strong{display:block;font-family:var(--font-display);font-weight:900;font-size:1.6rem}
+.stat span{font-size:.8rem;opacity:.8;letter-spacing:.03em}
+
+.wave{display:block;margin-top:-1px;fill:var(--bg)}
+
+main{max-width:1100px;margin:0 auto;padding:0 1.5rem 4rem}
+
+.progress-strip{background:#fff;border-radius:var(--radius);border:1px solid var(--border);padding:1.25rem 1.5rem;margin-bottom:2rem;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;box-shadow:var(--shadow-sm)}
+.progress-strip p{font-size:.88rem;color:var(--text-muted);flex:1;min-width:180px}
+.progress-strip p strong{color:var(--purple)}
+.progress-bar-wrap{flex:2;min-width:200px}
+.progress-bar-track{height:10px;background:#ede9fe;border-radius:var(--radius-full);overflow:hidden}
+.progress-bar-fill{height:100%;background:var(--grad);border-radius:var(--radius-full);width:0%;transition:width 1.2s cubic-bezier(.16,1,.3,1)}
+.progress-label{font-size:.78rem;color:var(--text-faint);margin-top:.35rem;text-align:right}
+
+.section-header{display:flex;align-items:center;gap:1rem;margin:2.5rem 0 1.5rem}
+.section-header h2{font-family:var(--font-display);font-weight:800;font-size:1.3rem;color:var(--text)}
+.section-pill{background:var(--grad);color:#fff;font-size:.7rem;font-weight:700;padding:.25rem .7rem;border-radius:var(--radius-full);letter-spacing:.06em;text-transform:uppercase}
+
+.lesson-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:1.25rem}
+
+.card{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow-sm);border:1px solid var(--border);overflow:hidden;transition:transform 200ms cubic-bezier(.16,1,.3,1),box-shadow 200ms cubic-bezier(.16,1,.3,1);display:flex;flex-direction:column}
+.card:hover{transform:translateY(-4px);box-shadow:var(--shadow-md)}
+.card-header{background:var(--grad);padding:1.25rem 1.25rem 1rem;position:relative;min-height:110px;display:flex;flex-direction:column;justify-content:space-between}
+.card-header::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:20px;background:var(--surface);clip-path:ellipse(55% 100% at 50% 100%)}
+.card-number{font-family:var(--font-display);font-weight:900;font-size:.7rem;color:rgba(255,255,255,.7);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.5rem}
+.card-title-main{font-family:var(--font-display);font-weight:900;font-size:1.25rem;color:#fff;line-height:1.2}
+.card-title-sub{color:rgba(255,255,255,.8);font-size:.85rem;font-weight:600;margin-top:.2rem}
+.level-badge{position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,.25);color:#fff;font-size:.7rem;font-weight:800;padding:.2rem .6rem;border-radius:var(--radius-full);border:1px solid rgba(255,255,255,.4);letter-spacing:.05em}
+.card-body{padding:1.25rem 1.25rem 0;flex:1}
+.card-desc{font-size:.9rem;color:var(--text-muted);line-height:1.55;margin-bottom:1rem}
+.chip-list{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1.1rem}
+.chip{font-size:.72rem;font-weight:700;padding:.22rem .65rem;border-radius:var(--radius-full);background:#f3f0ff;color:var(--purple);border:1px solid rgba(124,58,237,.15)}
+.card-footer{padding:1rem 1.25rem 1.25rem;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:.75rem}
+.card-meta{font-size:.78rem;color:var(--text-faint);font-weight:600}
+.card-meta span{color:var(--purple);font-weight:700}
+.btn-start{display:inline-flex;align-items:center;gap:.4rem;background:var(--grad);color:#fff;font-family:var(--font-display);font-weight:800;font-size:.85rem;padding:.55rem 1.2rem;border-radius:var(--radius-full);box-shadow:0 4px 12px rgba(124,58,237,.3);transition:transform 150ms ease,box-shadow 150ms ease;white-space:nowrap;border:none;cursor:pointer}
+.btn-start:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(124,58,237,.4)}
+.btn-start svg{width:14px;height:14px;flex-shrink:0}
+
+.card-coming{background:var(--surface-2);border:2px dashed rgba(124,58,237,.2);border-radius:var(--radius);padding:2rem 1.5rem;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:.75rem;min-height:220px}
+.card-coming .coming-icon{width:48px;height:48px;border-radius:var(--radius);background:linear-gradient(135deg,#f3f0ff,#fdf2f8);display:flex;align-items:center;justify-content:center;font-size:1.4rem;border:1px solid rgba(124,58,237,.1)}
+.card-coming h3{font-family:var(--font-display);font-weight:800;font-size:1rem;color:var(--text)}
+.card-coming p{font-size:.83rem;color:var(--text-faint);max-width:24ch}
+.badge-soon{font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:.2rem .65rem;border-radius:var(--radius-full);background:#fef3c7;color:#92400e;border:1px solid #fde68a}
+
+.guide-box{background:#fff;border-radius:var(--radius);border:1px solid var(--border);padding:1.5rem;margin-top:2.5rem;display:flex;gap:1.25rem;align-items:flex-start;box-shadow:var(--shadow-sm)}
+.guide-icon{flex-shrink:0;width:40px;height:40px;background:var(--grad);border-radius:.6rem;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.1rem}
+.guide-box h3{font-family:var(--font-display);font-weight:800;font-size:1rem;margin-bottom:.35rem}
+.guide-box p{font-size:.85rem;color:var(--text-muted);line-height:1.6}
+code{background:#f3f0ff;color:var(--purple);font-size:.82em;padding:.1em .45em;border-radius:.3rem;font-family:monospace;border:1px solid rgba(124,58,237,.15)}
+
+footer{background:var(--grad);text-align:center;padding:2rem 1.5rem;color:rgba(255,255,255,.85);font-size:.85rem}
+footer strong{color:#fff}
+footer a{color:#fff;text-decoration:underline}
+
+@media(max-width:600px){
+  header{padding:2rem 1rem 4rem}
+  .header-stats{gap:1.25rem}
+  .guide-box{flex-direction:column}
+  .progress-strip{flex-direction:column;align-items:flex-start}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <div class="logo-wrap">
+      <svg width="42" height="42" viewBox="0 0 42 42" fill="none" aria-label="French with Tamoul logo">
+        <rect width="42" height="42" rx="11" fill="rgba(255,255,255,0.2)"/>
+        <rect width="42" height="42" rx="11" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" fill="none"/>
+        <path d="M11 13 C11 11.3 12.3 10 14 10 L28 10 C29.7 10 31 11.3 31 13 L31 21 C31 22.7 29.7 24 28 24 L23 24 L19 28 L19 24 L14 24 C12.3 24 11 22.7 11 21 Z" fill="rgba(255,255,255,0.9)"/>
+        <text x="21" y="20" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="9" fill="#7c3aed">FR</text>
+      </svg>
+      <div>
+        <div class="logo-text">French with Tamoul</div>
+        <div class="logo-sub">Interactive Lesson Hub</div>
+      </div>
+    </div>
+    <div class="hero-badge">🇫🇷 Adult Learners &nbsp;·&nbsp; A1 Level</div>
+    <h1>Your French lessons,<br><span>all in one place</span></h1>
+    <p>Click any lesson card to launch the interactive session. Each lesson includes vocabulary, grammar, quizzes and real photos.</p>
+    <div class="header-stats">
+      <div class="stat"><strong>2</strong><span>Lessons live</span></div>
+      <div class="stat"><strong>A1</strong><span>Current level</span></div>
+      <div class="stat"><strong>10+</strong><span>Activities per lesson</span></div>
+    </div>
+  </div>
+</header>
+
+<svg class="wave" viewBox="0 0 1440 48" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="display:block;margin-top:-1px"><path d="M0,48 C360,0 1080,0 1440,48 L1440,48 L0,48 Z"/></svg>
+
+<main>
+  <div class="progress-strip">
+    <p>Course progress: <strong>2 of 10 lessons</strong> published</p>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-track"><div class="progress-bar-fill" id="courseBar"></div></div>
+      <div class="progress-label">20% complete</div>
+    </div>
+  </div>
+
+  <div class="section-header">
+    <h2>Published Lessons</h2>
+    <span class="section-pill">Ready to use ✓</span>
+  </div>
+
+  <div class="lesson-grid">
+
+    <div class="card">
+      <div class="card-header">
+        <span class="level-badge">A1</span>
+        <div>
+          <div class="card-number">Lesson 1 &nbsp;·&nbsp; Vocabulary</div>
+          <div class="card-title-main">Les Salutations</div>
+          <div class="card-title-sub">Greetings &amp; Introductions</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">Meet &amp; greet in French — bonjour, bonsoir, je m'appelle… Real photos, vocabulary flip cards and an interactive quiz.</p>
+        <div class="chip-list">
+          <span class="chip">Flip Cards</span>
+          <span class="chip">Photo Quiz</span>
+          <span class="chip">Dialogue</span>
+          <span class="chip">Listening</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-meta">⏱ <span>~20 min</span> &nbsp;·&nbsp; 6 activities</div>
+        <a class="btn-start" href="https://thetamoul.github.io/bonjour-vocab-lesson/" target="_blank" rel="noopener noreferrer">
+          Start
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="level-badge">A1</span>
+        <div>
+          <div class="card-number">Lesson 2 &nbsp;·&nbsp; Grammar</div>
+          <div class="card-title-main">Les Articles Définis</div>
+          <div class="card-title-sub">Le, La, L', Les</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">Master French definite articles — masculine, feminine and plural nouns with real photos, drag &amp; drop sorting and 10 interactive activities.</p>
+        <div class="chip-list">
+          <span class="chip">Flip Cards</span>
+          <span class="chip">Drag &amp; Drop</span>
+          <span class="chip">Fill Blanks</span>
+          <span class="chip">Photo Quiz</span>
+          <span class="chip">Plurals</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-meta">⏱ <span>~30 min</span> &nbsp;·&nbsp; 10 activities</div>
+        <a class="btn-start" href="https://thetamoul.github.io/articles-definis-lesson/" target="_blank" rel="noopener noreferrer">
+          Start
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="card-coming">
+      <div class="coming-icon">📦</div>
+      <span class="badge-soon">Coming soon</span>
+      <h3>Lesson 3 · Les Articles Indéfinis</h3>
+      <p>Un, une, des — with contexts and practice</p>
+    </div>
+
+    <div class="card-coming">
+      <div class="coming-icon">📦</div>
+      <span class="badge-soon">Coming soon</span>
+      <h3>Lesson 4 · Les Nombres</h3>
+      <p>Numbers 0–100 with interactive drills</p>
+    </div>
+
+    <div class="card-coming">
+      <div class="coming-icon">📦</div>
+      <span class="badge-soon">Coming soon</span>
+      <h3>Lesson 5 · Le Verbe Être</h3>
+      <p>Je suis, tu es… — conjugation in context</p>
+    </div>
+
+  </div>
+
+  <div class="guide-box">
+    <div class="guide-icon">➕</div>
+    <div>
+      <h3>How to add a new lesson</h3>
+      <p>
+        Create a new GitHub repository (e.g. <code>articles-indefinis-lesson</code>), upload your <code>index.html</code>,
+        then enable <strong>GitHub Pages</strong> under Settings → Pages → Branch: main.
+        Your lesson instantly appears at <code>thetamoul.github.io/articles-indefinis-lesson/</code>.
+        Finally, replace a "Coming soon" card in this hub page with a live lesson card pointing to the new URL.
+      </p>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <p>Built with ❤️ by <strong>Tamoul</strong> &nbsp;·&nbsp; French Teacher &nbsp;·&nbsp; London &nbsp;|&nbsp;
+  <a href="https://github.com/thetamoul" target="_blank" rel="noopener noreferrer">github.com/thetamoul</a></p>
+</footer>
+
+<script>
+window.addEventListener('load',()=>{setTimeout(()=>{document.getElementById('courseBar').style.width='20%'},400)});
+</script>
+</body>
+</html>
