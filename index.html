@@ -1,248 +1,613 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>French with Tamoul — Lesson Hub</title>
+<title>French with Paul — Student Portal</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-font-smoothing:antialiased;scroll-behavior:smooth}
+
 :root{
   --grad:linear-gradient(135deg,#7c3aed 0%,#a855f7 50%,#ec4899 100%);
-  --purple:#7c3aed;--bg:#f5f3ff;--surface:#fff;--surface-2:#fafafa;
+  --purple:#7c3aed;--pink:#ec4899;
+  --bg:#f5f3ff;--surface:#fff;--surface-2:#fafafa;--surface-3:#f3f0ff;
   --text:#1e1b4b;--text-muted:#6b7280;--text-faint:#9ca3af;
-  --border:rgba(124,58,237,0.12);
-  --shadow-sm:0 2px 8px rgba(124,58,237,0.08);
-  --shadow-md:0 8px 24px rgba(124,58,237,0.14);
-  --radius:1rem;--radius-full:9999px;
+  --border:rgba(124,58,237,0.13);--border-light:rgba(124,58,237,0.07);
+  --shadow-sm:0 2px 8px rgba(124,58,237,0.07);
+  --shadow-md:0 8px 28px rgba(124,58,237,0.13);
+  --shadow-lg:0 20px 48px rgba(124,58,237,0.18);
+  --radius:1rem;--radius-sm:.5rem;--radius-full:9999px;
   --font-body:'Nunito Sans',sans-serif;--font-display:'Nunito',sans-serif;
+  --transition:180ms cubic-bezier(0.16,1,0.3,1);
 }
-body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100dvh}
-a{text-decoration:none;color:inherit}
-img{display:block;max-width:100%}
+[data-theme="dark"]{
+  --bg:#13111a;--surface:#1c1928;--surface-2:#201e2e;--surface-3:#251f38;
+  --text:#e8e4f8;--text-muted:#9990b8;--text-faint:#5a5472;
+  --border:rgba(168,139,250,0.15);--border-light:rgba(168,139,250,0.07);
+  --shadow-sm:0 2px 8px rgba(0,0,0,0.3);
+  --shadow-md:0 8px 28px rgba(0,0,0,0.4);
+  --shadow-lg:0 20px 48px rgba(0,0,0,0.5);
+}
 
-header{background:var(--grad);padding:3rem 1.5rem 5rem;text-align:center;position:relative;overflow:hidden}
-header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(255,255,255,0.08) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(255,255,255,0.06) 0%,transparent 50%)}
-.header-inner{position:relative;z-index:1;max-width:700px;margin:0 auto}
-.logo-wrap{display:flex;align-items:center;justify-content:center;gap:.75rem;margin-bottom:1.5rem}
-.logo-text{font-family:var(--font-display);font-weight:900;font-size:1.25rem;color:#fff}
-.logo-sub{font-size:.8rem;font-weight:600;color:rgba(255,255,255,.75);letter-spacing:.05em;text-transform:uppercase}
-.hero-badge{display:inline-block;background:rgba(255,255,255,.2);color:#fff;font-family:var(--font-display);font-size:.75rem;font-weight:700;padding:.3rem .9rem;border-radius:var(--radius-full);letter-spacing:.08em;text-transform:uppercase;margin-bottom:1rem;border:1px solid rgba(255,255,255,.3)}
-header h1{font-family:var(--font-display);font-weight:900;font-size:clamp(2rem,5vw,3.2rem);color:#fff;line-height:1.1;margin-bottom:.75rem}
-header h1 span{color:#fde68a}
-header p{color:rgba(255,255,255,.85);font-size:1.05rem;max-width:52ch;margin:0 auto 1.5rem}
-.header-stats{display:flex;justify-content:center;gap:2rem;flex-wrap:wrap}
-.stat{color:#fff;text-align:center}
-.stat strong{display:block;font-family:var(--font-display);font-weight:900;font-size:1.6rem}
-.stat span{font-size:.8rem;opacity:.8;letter-spacing:.03em}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100dvh;transition:background var(--transition),color var(--transition)}
 
-.wave{display:block;margin-top:-1px;fill:var(--bg)}
+/* ── DARK MODE TOGGLE ── */
+.dark-toggle{
+  position:fixed;top:1rem;right:1rem;z-index:1000;
+  width:44px;height:44px;border-radius:var(--radius-full);
+  background:var(--surface);border:1px solid var(--border);
+  box-shadow:var(--shadow-md);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all var(--transition);
+  color:var(--text-muted);
+}
+.dark-toggle:hover{transform:scale(1.1);box-shadow:var(--shadow-lg);color:var(--purple)}
 
+/* ── VIEWS (login / portal) ── */
+.view{display:none}
+.view.active{display:block}
+
+/* ══════════════════════════════
+   LOGIN PAGE
+══════════════════════════════ */
+#loginView{
+  min-height:100dvh;
+  display:flex;align-items:center;justify-content:center;
+  padding:2rem 1rem;
+  background:var(--bg);
+}
+.login-card{
+  width:100%;max-width:420px;
+  background:var(--surface);
+  border-radius:1.5rem;
+  border:1px solid var(--border);
+  box-shadow:var(--shadow-lg);
+  overflow:hidden;
+}
+.login-top{
+  background:var(--grad);
+  padding:2rem 2rem 1.5rem;
+  text-align:center;
+}
+.login-logo{
+  display:flex;align-items:center;justify-content:center;gap:.6rem;margin-bottom:1rem;
+}
+.login-logo-text{font-family:var(--font-display);font-weight:900;font-size:1.1rem;color:#fff}
+.login-top h1{font-family:var(--font-display);font-weight:900;font-size:1.6rem;color:#fff;line-height:1.2;margin-bottom:.4rem}
+.login-top p{color:rgba(255,255,255,.8);font-size:.9rem}
+
+.login-body{padding:1.75rem 2rem 2rem}
+
+.divider{display:flex;align-items:center;gap:.75rem;margin:1.25rem 0}
+.divider span{font-size:.78rem;color:var(--text-faint);font-weight:600;white-space:nowrap}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* Google button */
+.btn-google{
+  width:100%;display:flex;align-items:center;justify-content:center;gap:.65rem;
+  padding:.75rem 1rem;border-radius:.75rem;
+  border:1.5px solid var(--border);
+  background:var(--surface);color:var(--text);
+  font-family:var(--font-display);font-weight:700;font-size:.9rem;
+  cursor:pointer;transition:all var(--transition);
+  box-shadow:var(--shadow-sm);
+}
+.btn-google:hover{border-color:var(--purple);box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.btn-google svg{width:20px;height:20px;flex-shrink:0}
+
+/* Name form */
+.form-group{margin-bottom:1rem}
+.form-group label{display:block;font-size:.82rem;font-weight:700;color:var(--text-muted);margin-bottom:.4rem;letter-spacing:.02em}
+.form-group input{
+  width:100%;padding:.7rem 1rem;
+  border-radius:.75rem;border:1.5px solid var(--border);
+  background:var(--surface-2);color:var(--text);
+  font-family:var(--font-body);font-size:.95rem;
+  transition:border-color var(--transition),box-shadow var(--transition);
+  outline:none;
+}
+.form-group input:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(124,58,237,0.12)}
+.form-group input::placeholder{color:var(--text-faint)}
+
+.btn-primary{
+  width:100%;padding:.8rem;border-radius:.75rem;
+  background:var(--grad);color:#fff;
+  font-family:var(--font-display);font-weight:800;font-size:.95rem;
+  cursor:pointer;border:none;
+  box-shadow:0 4px 14px rgba(124,58,237,0.35);
+  transition:transform var(--transition),box-shadow var(--transition);
+}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(124,58,237,0.45)}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+.login-note{text-align:center;font-size:.75rem;color:var(--text-faint);margin-top:1rem;line-height:1.5}
+
+/* ══════════════════════════════
+   PORTAL PAGE
+══════════════════════════════ */
+#portalView{display:none}
+#portalView.active{display:block}
+
+/* Top bar */
+.topbar{
+  background:var(--grad);
+  padding:1.5rem 1.5rem 3.5rem;
+  position:relative;overflow:hidden;
+}
+.topbar::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 15% 60%,rgba(255,255,255,0.08) 0%,transparent 60%),radial-gradient(ellipse at 85% 10%,rgba(255,255,255,0.06) 0%,transparent 50%)}
+.topbar-inner{max-width:1100px;margin:0 auto;position:relative;z-index:1}
+
+.topbar-row1{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:1.5rem}
+.portal-logo{display:flex;align-items:center;gap:.6rem}
+.portal-logo-text{font-family:var(--font-display);font-weight:900;font-size:1rem;color:#fff}
+.portal-logo-sub{font-size:.7rem;color:rgba(255,255,255,.7);letter-spacing:.04em;text-transform:uppercase}
+
+.user-chip{
+  display:flex;align-items:center;gap:.5rem;
+  background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);
+  border-radius:var(--radius-full);padding:.35rem .75rem .35rem .35rem;
+}
+.user-avatar{
+  width:28px;height:28px;border-radius:var(--radius-full);
+  background:rgba(255,255,255,0.9);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-display);font-weight:900;font-size:.75rem;color:var(--purple);
+}
+.user-name{font-family:var(--font-display);font-weight:700;font-size:.82rem;color:#fff}
+.btn-logout{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.8);font-size:.72rem;font-weight:700;padding:.2rem .6rem;border-radius:var(--radius-full);cursor:pointer;transition:all var(--transition);font-family:var(--font-display)}
+.btn-logout:hover{background:rgba(255,255,255,.25);color:#fff}
+
+/* Student progress bar in header */
+.student-progress{color:#fff}
+.student-progress h2{font-family:var(--font-display);font-weight:900;font-size:clamp(1.3rem,3vw,2rem);margin-bottom:.25rem}
+.student-progress h2 span{color:#fde68a}
+.student-progress p{color:rgba(255,255,255,.8);font-size:.88rem;margin-bottom:1rem}
+.progress-track{height:12px;background:rgba(255,255,255,.2);border-radius:var(--radius-full);overflow:hidden;margin-bottom:.4rem;border:1px solid rgba(255,255,255,.15)}
+.progress-fill{height:100%;background:#fff;border-radius:var(--radius-full);transition:width 1s cubic-bezier(.16,1,.3,1);min-width:2px}
+.progress-stats{display:flex;justify-content:space-between;font-size:.78rem;color:rgba(255,255,255,.75)}
+.progress-stats strong{color:#fff}
+
+.wave{display:block;margin-top:-1px}
+
+/* Main content */
 main{max-width:1100px;margin:0 auto;padding:0 1.5rem 4rem}
 
-.progress-strip{background:#fff;border-radius:var(--radius);border:1px solid var(--border);padding:1.25rem 1.5rem;margin-bottom:2rem;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;box-shadow:var(--shadow-sm)}
-.progress-strip p{font-size:.88rem;color:var(--text-muted);flex:1;min-width:180px}
-.progress-strip p strong{color:var(--purple)}
-.progress-bar-wrap{flex:2;min-width:200px}
-.progress-bar-track{height:10px;background:#ede9fe;border-radius:var(--radius-full);overflow:hidden}
-.progress-bar-fill{height:100%;background:var(--grad);border-radius:var(--radius-full);width:0%;transition:width 1.2s cubic-bezier(.16,1,.3,1)}
-.progress-label{font-size:.78rem;color:var(--text-faint);margin-top:.35rem;text-align:right}
+.section-header{display:flex;align-items:center;gap:.75rem;margin:2rem 0 1.25rem}
+.section-header h3{font-family:var(--font-display);font-weight:800;font-size:1.15rem;color:var(--text)}
+.section-pill{background:var(--grad);color:#fff;font-size:.68rem;font-weight:700;padding:.2rem .65rem;border-radius:var(--radius-full);letter-spacing:.06em;text-transform:uppercase}
 
-.section-header{display:flex;align-items:center;gap:1rem;margin:2.5rem 0 1.5rem}
-.section-header h2{font-family:var(--font-display);font-weight:800;font-size:1.3rem;color:var(--text)}
-.section-pill{background:var(--grad);color:#fff;font-size:.7rem;font-weight:700;padding:.25rem .7rem;border-radius:var(--radius-full);letter-spacing:.06em;text-transform:uppercase}
+/* Lesson grid */
+.lesson-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:1.25rem}
 
-.lesson-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:1.25rem}
+/* Lesson card */
+.card{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow-sm);border:1px solid var(--border);overflow:hidden;transition:transform 200ms cubic-bezier(.16,1,.3,1),box-shadow 200ms;display:flex;flex-direction:column}
+.card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md)}
+.card-header-band{background:var(--grad);padding:1.1rem 1.1rem .85rem;position:relative;min-height:100px;display:flex;flex-direction:column;justify-content:space-between}
+.card-header-band::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:18px;background:var(--surface);clip-path:ellipse(55% 100% at 50% 100%)}
+.card-num{font-family:var(--font-display);font-weight:800;font-size:.68rem;color:rgba(255,255,255,.7);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem}
+.card-title{font-family:var(--font-display);font-weight:900;font-size:1.1rem;color:#fff;line-height:1.2}
+.card-sub{color:rgba(255,255,255,.8);font-size:.8rem;font-weight:600;margin-top:.15rem}
+.level-pill{position:absolute;top:.85rem;right:.85rem;background:rgba(255,255,255,.25);color:#fff;font-size:.65rem;font-weight:800;padding:.18rem .55rem;border-radius:var(--radius-full);border:1px solid rgba(255,255,255,.4)}
 
-.card{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow-sm);border:1px solid var(--border);overflow:hidden;transition:transform 200ms cubic-bezier(.16,1,.3,1),box-shadow 200ms cubic-bezier(.16,1,.3,1);display:flex;flex-direction:column}
-.card:hover{transform:translateY(-4px);box-shadow:var(--shadow-md)}
-.card-header{background:var(--grad);padding:1.25rem 1.25rem 1rem;position:relative;min-height:110px;display:flex;flex-direction:column;justify-content:space-between}
-.card-header::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:20px;background:var(--surface);clip-path:ellipse(55% 100% at 50% 100%)}
-.card-number{font-family:var(--font-display);font-weight:900;font-size:.7rem;color:rgba(255,255,255,.7);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.5rem}
-.card-title-main{font-family:var(--font-display);font-weight:900;font-size:1.25rem;color:#fff;line-height:1.2}
-.card-title-sub{color:rgba(255,255,255,.8);font-size:.85rem;font-weight:600;margin-top:.2rem}
-.level-badge{position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,.25);color:#fff;font-size:.7rem;font-weight:800;padding:.2rem .6rem;border-radius:var(--radius-full);border:1px solid rgba(255,255,255,.4);letter-spacing:.05em}
-.card-body{padding:1.25rem 1.25rem 0;flex:1}
-.card-desc{font-size:.9rem;color:var(--text-muted);line-height:1.55;margin-bottom:1rem}
-.chip-list{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1.1rem}
-.chip{font-size:.72rem;font-weight:700;padding:.22rem .65rem;border-radius:var(--radius-full);background:#f3f0ff;color:var(--purple);border:1px solid rgba(124,58,237,.15)}
-.card-footer{padding:1rem 1.25rem 1.25rem;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:.75rem}
-.card-meta{font-size:.78rem;color:var(--text-faint);font-weight:600}
-.card-meta span{color:var(--purple);font-weight:700}
-.btn-start{display:inline-flex;align-items:center;gap:.4rem;background:var(--grad);color:#fff;font-family:var(--font-display);font-weight:800;font-size:.85rem;padding:.55rem 1.2rem;border-radius:var(--radius-full);box-shadow:0 4px 12px rgba(124,58,237,.3);transition:transform 150ms ease,box-shadow 150ms ease;white-space:nowrap;border:none;cursor:pointer}
-.btn-start:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(124,58,237,.4)}
-.btn-start svg{width:14px;height:14px;flex-shrink:0}
+.card-body{padding:1rem 1.1rem 0;flex:1}
+.card-desc{font-size:.85rem;color:var(--text-muted);line-height:1.5;margin-bottom:.85rem}
+.chip-list{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:.9rem}
+.chip{font-size:.68rem;font-weight:700;padding:.18rem .55rem;border-radius:var(--radius-full);background:var(--surface-3);color:var(--purple);border:1px solid var(--border)}
 
-.card-coming{background:var(--surface-2);border:2px dashed rgba(124,58,237,.2);border-radius:var(--radius);padding:2rem 1.5rem;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:.75rem;min-height:220px}
-.card-coming .coming-icon{width:48px;height:48px;border-radius:var(--radius);background:linear-gradient(135deg,#f3f0ff,#fdf2f8);display:flex;align-items:center;justify-content:center;font-size:1.4rem;border:1px solid rgba(124,58,237,.1)}
-.card-coming h3{font-family:var(--font-display);font-weight:800;font-size:1rem;color:var(--text)}
-.card-coming p{font-size:.83rem;color:var(--text-faint);max-width:24ch}
-.badge-soon{font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:.2rem .65rem;border-radius:var(--radius-full);background:#fef3c7;color:#92400e;border:1px solid #fde68a}
+/* Per-card student progress mini bar */
+.card-progress{margin-bottom:.75rem}
+.card-progress-label{display:flex;justify-content:space-between;font-size:.72rem;color:var(--text-faint);margin-bottom:.3rem}
+.card-progress-label .pct{font-weight:700;color:var(--purple)}
+.mini-track{height:6px;background:var(--surface-3);border-radius:var(--radius-full);overflow:hidden}
+.mini-fill{height:100%;background:var(--grad);border-radius:var(--radius-full);transition:width .8s cubic-bezier(.16,1,.3,1)}
 
-.guide-box{background:#fff;border-radius:var(--radius);border:1px solid var(--border);padding:1.5rem;margin-top:2.5rem;display:flex;gap:1.25rem;align-items:flex-start;box-shadow:var(--shadow-sm)}
-.guide-icon{flex-shrink:0;width:40px;height:40px;background:var(--grad);border-radius:.6rem;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.1rem}
-.guide-box h3{font-family:var(--font-display);font-weight:800;font-size:1rem;margin-bottom:.35rem}
-.guide-box p{font-size:.85rem;color:var(--text-muted);line-height:1.6}
-code{background:#f3f0ff;color:var(--purple);font-size:.82em;padding:.1em .45em;border-radius:.3rem;font-family:monospace;border:1px solid rgba(124,58,237,.15)}
+.card-footer{padding:.85rem 1.1rem 1.1rem;border-top:1px solid var(--border-light);display:flex;align-items:center;justify-content:space-between;gap:.5rem}
+.card-meta{font-size:.73rem;color:var(--text-faint);font-weight:600}
+.card-meta em{color:var(--purple);font-style:normal;font-weight:700}
+.btn-go{display:inline-flex;align-items:center;gap:.35rem;background:var(--grad);color:#fff;font-family:var(--font-display);font-weight:800;font-size:.82rem;padding:.48rem 1.05rem;border-radius:var(--radius-full);box-shadow:0 4px 12px rgba(124,58,237,0.28);transition:transform 140ms ease,box-shadow 140ms ease;white-space:nowrap;border:none;cursor:pointer;text-decoration:none}
+.btn-go:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(124,58,237,0.38)}
+.btn-go svg{width:13px;height:13px;flex-shrink:0}
 
-footer{background:var(--grad);text-align:center;padding:2rem 1.5rem;color:rgba(255,255,255,.85);font-size:.85rem}
+/* Coming soon */
+.card-soon{background:var(--surface-2);border:2px dashed var(--border);border-radius:var(--radius);padding:1.75rem 1.25rem;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:.65rem;min-height:200px}
+.soon-icon{width:44px;height:44px;border-radius:var(--radius-sm);background:linear-gradient(135deg,var(--surface-3),var(--surface-2));display:flex;align-items:center;justify-content:center;font-size:1.25rem;border:1px solid var(--border)}
+.card-soon h4{font-family:var(--font-display);font-weight:800;font-size:.95rem;color:var(--text)}
+.card-soon p{font-size:.78rem;color:var(--text-faint);max-width:22ch}
+.badge-soon{font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:.18rem .6rem;border-radius:var(--radius-full);background:#fef3c7;color:#92400e;border:1px solid #fde68a}
+
+/* Guide box */
+.guide{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:1.25rem 1.5rem;margin-top:2rem;display:flex;gap:1rem;align-items:flex-start;box-shadow:var(--shadow-sm)}
+.guide-icon{flex-shrink:0;width:38px;height:38px;background:var(--grad);border-radius:.6rem;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1rem}
+.guide h4{font-family:var(--font-display);font-weight:800;font-size:.95rem;margin-bottom:.3rem;color:var(--text)}
+.guide p{font-size:.82rem;color:var(--text-muted);line-height:1.55}
+code{background:var(--surface-3);color:var(--purple);font-size:.8em;padding:.1em .4em;border-radius:.3rem;font-family:monospace;border:1px solid var(--border)}
+
+footer{background:var(--grad);text-align:center;padding:1.75rem 1.5rem;color:rgba(255,255,255,.85);font-size:.82rem}
 footer strong{color:#fff}
 footer a{color:#fff;text-decoration:underline}
 
-@media(max-width:600px){
-  header{padding:2rem 1rem 4rem}
-  .header-stats{gap:1.25rem}
-  .guide-box{flex-direction:column}
-  .progress-strip{flex-direction:column;align-items:flex-start}
+@media(max-width:640px){
+  .login-body,.login-top{padding-left:1.25rem;padding-right:1.25rem}
+  .topbar{padding-left:1rem;padding-right:1rem}
+  .user-chip .user-name{display:none}
+  .guide{flex-direction:column}
 }
 </style>
 </head>
 <body>
-<header>
-  <div class="header-inner">
-    <div class="logo-wrap">
-      <svg width="42" height="42" viewBox="0 0 42 42" fill="none" aria-label="French with Tamoul logo">
-        <rect width="42" height="42" rx="11" fill="rgba(255,255,255,0.2)"/>
-        <rect width="42" height="42" rx="11" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" fill="none"/>
-        <path d="M11 13 C11 11.3 12.3 10 14 10 L28 10 C29.7 10 31 11.3 31 13 L31 21 C31 22.7 29.7 24 28 24 L23 24 L19 28 L19 24 L14 24 C12.3 24 11 22.7 11 21 Z" fill="rgba(255,255,255,0.9)"/>
-        <text x="21" y="20" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="9" fill="#7c3aed">FR</text>
-      </svg>
+
+<!-- Dark mode toggle — always visible -->
+<button class="dark-toggle" id="darkToggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+  <svg id="iconSun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+  <svg id="iconMoon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+</button>
+
+<!-- ══════════════════════════════
+     LOGIN VIEW
+══════════════════════════════ -->
+<div class="view active" id="loginView">
+  <div style="min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:2rem 1rem;background:var(--bg)">
+    <div class="login-card">
+      <div class="login-top">
+        <div class="login-logo">
+          <svg width="38" height="38" viewBox="0 0 38 38" fill="none">
+            <rect width="38" height="38" rx="10" fill="rgba(255,255,255,0.2)"/>
+            <rect width="38" height="38" rx="10" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" fill="none"/>
+            <path d="M10 12 C10 10.3 11.3 9 13 9 L25 9 C26.7 9 28 10.3 28 12 L28 19 C28 20.7 26.7 22 25 22 L21 22 L17.5 25.5 L17.5 22 L13 22 C11.3 22 10 20.7 10 19 Z" fill="rgba(255,255,255,0.9)"/>
+            <text x="19" y="18.5" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="8.5" fill="#7c3aed">FR</text>
+          </svg>
+          <div>
+            <div class="login-logo-text">French with Paul</div>
+          </div>
+        </div>
+        <h1>Welcome back 👋</h1>
+        <p>Sign in to access your lessons and track your progress</p>
+      </div>
+
+      <div class="login-body">
+
+        <!-- Google sign-in -->
+        <button class="btn-google" id="btnGoogle">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+          </svg>
+          Continue with Google
+        </button>
+
+        <div class="divider"><span>or enter your name</span></div>
+
+        <div class="form-group">
+          <label for="studentName">Your first name</label>
+          <input type="text" id="studentName" placeholder="e.g. Sophie" autocomplete="given-name" maxlength="40">
+        </div>
+        <div class="form-group">
+          <label for="studentLevel">Your level</label>
+          <select id="studentLevel" style="width:100%;padding:.7rem 1rem;border-radius:.75rem;border:1.5px solid var(--border);background:var(--surface-2);color:var(--text);font-family:var(--font-body);font-size:.95rem;outline:none;cursor:pointer;transition:border-color var(--transition)">
+            <option value="A1">A1 — Complete Beginner</option>
+            <option value="A1+">A1+ — Elementary</option>
+            <option value="A2">A2 — Pre-Intermediate</option>
+          </select>
+        </div>
+        <button class="btn-primary" id="btnSignIn" disabled>Enter my lessons →</button>
+        <p class="login-note">No account needed. Your progress is saved in this browser session.<br>A Google sign-in will be available soon.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     PORTAL VIEW
+══════════════════════════════ -->
+<div class="view" id="portalView">
+
+  <!-- Top bar with student progress -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="topbar-row1">
+        <div class="portal-logo">
+          <svg width="34" height="34" viewBox="0 0 34 34" fill="none">
+            <rect width="34" height="34" rx="9" fill="rgba(255,255,255,0.2)"/>
+            <path d="M8 10 C8 8.3 9.3 7 11 7 L23 7 C24.7 7 26 8.3 26 10 L26 16 C26 17.7 24.7 19 23 19 L19.5 19 L16.5 22 L16.5 19 L11 19 C9.3 19 8 17.7 8 16 Z" fill="rgba(255,255,255,0.9)"/>
+            <text x="17" y="15.5" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="7.5" fill="#7c3aed">FR</text>
+          </svg>
+          <div>
+            <div class="portal-logo-text">French with Paul</div>
+            <div class="portal-logo-sub">Student Portal</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:.6rem;flex-wrap:wrap">
+          <div class="user-chip">
+            <div class="user-avatar" id="userAvatar">S</div>
+            <span class="user-name" id="userNameDisplay">Student</span>
+          </div>
+          <button class="btn-logout" id="btnLogout">Sign out</button>
+        </div>
+      </div>
+
+      <!-- Student personal progress -->
+      <div class="student-progress">
+        <h2>Bonjour, <span id="heroName">Student</span> ! 🇫🇷</h2>
+        <p id="progressSubline">You've completed <strong id="completedCount">0</strong> out of <strong>2</strong> available lessons</p>
+        <div class="progress-track">
+          <div class="progress-fill" id="heroProgressFill" style="width:0%"></div>
+        </div>
+        <div class="progress-stats">
+          <span>Overall progress</span>
+          <strong id="heroProgressPct">0%</strong>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <svg viewBox="0 0 1440 40" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="display:block;margin-top:-1px;fill:var(--bg);transition:fill var(--transition)"><path d="M0,40 C360,0 1080,0 1440,40 L1440,40 L0,40 Z"/></svg>
+
+  <main>
+    <div class="section-header">
+      <h3>Your Lessons</h3>
+      <span class="section-pill">A1 Level</span>
+    </div>
+
+    <div class="lesson-grid">
+
+      <!-- LESSON 1 -->
+      <div class="card">
+        <div class="card-header-band">
+          <span class="level-pill">A1</span>
+          <div>
+            <div class="card-num">Lesson 1 · Vocabulary</div>
+            <div class="card-title">Les Salutations</div>
+            <div class="card-sub">Greetings &amp; Introductions</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <p class="card-desc">Meet &amp; greet in French — bonjour, bonsoir, je m'appelle… Real photos, vocabulary flip cards and an interactive quiz.</p>
+          <div class="chip-list">
+            <span class="chip">Flip Cards</span><span class="chip">Photo Quiz</span><span class="chip">Dialogue</span><span class="chip">Listening</span>
+          </div>
+          <div class="card-progress">
+            <div class="card-progress-label">
+              <span>Your progress</span>
+              <span class="pct" id="pct1">Not started</span>
+            </div>
+            <div class="mini-track"><div class="mini-fill" id="bar1" style="width:0%"></div></div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="card-meta">⏱ <em>~20 min</em> · 6 activities</div>
+          <a class="btn-go" href="https://thetamoul.github.io/bonjour-vocab-lesson/" target="_blank" rel="noopener noreferrer" id="startL1">
+            Start <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- LESSON 2 -->
+      <div class="card">
+        <div class="card-header-band">
+          <span class="level-pill">A1</span>
+          <div>
+            <div class="card-num">Lesson 2 · Grammar</div>
+            <div class="card-title">Les Articles Définis</div>
+            <div class="card-sub">Le, La, L', Les</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <p class="card-desc">Master French definite articles — masculine, feminine and plural nouns with real photos, drag &amp; drop sorting and 10 interactive activities.</p>
+          <div class="chip-list">
+            <span class="chip">Flip Cards</span><span class="chip">Drag &amp; Drop</span><span class="chip">Fill Blanks</span><span class="chip">Photo Quiz</span><span class="chip">Plurals</span>
+          </div>
+          <div class="card-progress">
+            <div class="card-progress-label">
+              <span>Your progress</span>
+              <span class="pct" id="pct2">Not started</span>
+            </div>
+            <div class="mini-track"><div class="mini-fill" id="bar2" style="width:0%"></div></div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="card-meta">⏱ <em>~30 min</em> · 10 activities</div>
+          <a class="btn-go" href="https://thetamoul.github.io/articles-definis-grammar/" target="_blank" rel="noopener noreferrer" id="startL2">
+            Start <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- COMING SOON -->
+      <div class="card-soon">
+        <div class="soon-icon">📦</div>
+        <span class="badge-soon">Coming soon</span>
+        <h4>Lesson 3 · Les Articles Indéfinis</h4>
+        <p>Un, une, des — with contexts and practice</p>
+      </div>
+
+      <div class="card-soon">
+        <div class="soon-icon">📦</div>
+        <span class="badge-soon">Coming soon</span>
+        <h4>Lesson 4 · Les Nombres</h4>
+        <p>Numbers 0–100 with interactive drills</p>
+      </div>
+
+      <div class="card-soon">
+        <div class="soon-icon">📦</div>
+        <span class="badge-soon">Coming soon</span>
+        <h4>Lesson 5 · Le Verbe Être</h4>
+        <p>Je suis, tu es… — conjugation in context</p>
+      </div>
+
+    </div>
+
+    <!-- How to mark progress -->
+    <div class="guide">
+      <div class="guide-icon">💡</div>
       <div>
-        <div class="logo-text">French with Tamoul</div>
-        <div class="logo-sub">Interactive Lesson Hub</div>
+        <h4>How your progress is tracked</h4>
+        <p>After completing a lesson, click <strong>"Mark as done"</strong> — the button appears on each lesson card once you return. Your progress bar updates automatically. In a future update, scores will sync automatically from each lesson page.</p>
       </div>
     </div>
-    <div class="hero-badge">🇫🇷 Adult Learners &nbsp;·&nbsp; A1 Level</div>
-    <h1>Your French lessons,<br><span>all in one place</span></h1>
-    <p>Click any lesson card to launch the interactive session. Each lesson includes vocabulary, grammar, quizzes and real photos.</p>
-    <div class="header-stats">
-      <div class="stat"><strong>2</strong><span>Lessons live</span></div>
-      <div class="stat"><strong>A1</strong><span>Current level</span></div>
-      <div class="stat"><strong>10+</strong><span>Activities per lesson</span></div>
-    </div>
-  </div>
-</header>
 
-<svg class="wave" viewBox="0 0 1440 48" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="display:block;margin-top:-1px"><path d="M0,48 C360,0 1080,0 1440,48 L1440,48 L0,48 Z"/></svg>
-
-<main>
-  <div class="progress-strip">
-    <p>Course progress: <strong>2 of 10 lessons</strong> published</p>
-    <div class="progress-bar-wrap">
-      <div class="progress-bar-track"><div class="progress-bar-fill" id="courseBar"></div></div>
-      <div class="progress-label">20% complete</div>
-    </div>
-  </div>
-
-  <div class="section-header">
-    <h2>Published Lessons</h2>
-    <span class="section-pill">Ready to use ✓</span>
-  </div>
-
-  <div class="lesson-grid">
-
-    <div class="card">
-      <div class="card-header">
-        <span class="level-badge">A1</span>
-        <div>
-          <div class="card-number">Lesson 1 &nbsp;·&nbsp; Vocabulary</div>
-          <div class="card-title-main">Les Salutations</div>
-          <div class="card-title-sub">Greetings &amp; Introductions</div>
+    <!-- Mark as done buttons (appear after clicking Start) -->
+    <div id="markDoneArea" style="display:none;margin-top:1.25rem">
+      <div style="background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:1.25rem 1.5rem;box-shadow:var(--shadow-sm)">
+        <p style="font-family:var(--font-display);font-weight:800;font-size:.95rem;margin-bottom:.85rem;color:var(--text)">Mark a lesson as completed:</p>
+        <div style="display:flex;gap:.65rem;flex-wrap:wrap">
+          <button onclick="markDone(1)" style="padding:.55rem 1.1rem;border-radius:var(--radius-full);background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;font-family:var(--font-display);font-weight:700;font-size:.82rem;border:none;cursor:pointer;box-shadow:0 3px 10px rgba(124,58,237,.25)">✓ Lesson 1 done</button>
+          <button onclick="markDone(2)" style="padding:.55rem 1.1rem;border-radius:var(--radius-full);background:linear-gradient(135deg,#a855f7,#ec4899);color:#fff;font-family:var(--font-display);font-weight:700;font-size:.82rem;border:none;cursor:pointer;box-shadow:0 3px 10px rgba(168,85,247,.25)">✓ Lesson 2 done</button>
+          <button onclick="markDone(0)" style="padding:.55rem 1.1rem;border-radius:var(--radius-full);background:var(--surface-2);color:var(--text-muted);font-family:var(--font-display);font-weight:700;font-size:.82rem;border:1px solid var(--border);cursor:pointer">↺ Reset all</button>
         </div>
       </div>
-      <div class="card-body">
-        <p class="card-desc">Meet &amp; greet in French — bonjour, bonsoir, je m'appelle… Real photos, vocabulary flip cards and an interactive quiz.</p>
-        <div class="chip-list">
-          <span class="chip">Flip Cards</span>
-          <span class="chip">Photo Quiz</span>
-          <span class="chip">Dialogue</span>
-          <span class="chip">Listening</span>
-        </div>
-      </div>
-      <div class="card-footer">
-        <div class="card-meta">⏱ <span>~20 min</span> &nbsp;·&nbsp; 6 activities</div>
-        <a class="btn-start" href="https://thetamoul.github.io/bonjour-vocab-lesson/" target="_blank" rel="noopener noreferrer">
-          Start
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        </a>
-      </div>
     </div>
 
-    <div class="card">
-      <div class="card-header">
-        <span class="level-badge">A1</span>
-        <div>
-          <div class="card-number">Lesson 2 &nbsp;·&nbsp; Grammar</div>
-          <div class="card-title-main">Les Articles Définis</div>
-          <div class="card-title-sub">Le, La, L', Les</div>
-        </div>
-      </div>
-      <div class="card-body">
-        <p class="card-desc">Master French definite articles — masculine, feminine and plural nouns with real photos, drag &amp; drop sorting and 10 interactive activities.</p>
-        <div class="chip-list">
-          <span class="chip">Flip Cards</span>
-          <span class="chip">Drag &amp; Drop</span>
-          <span class="chip">Fill Blanks</span>
-          <span class="chip">Photo Quiz</span>
-          <span class="chip">Plurals</span>
-        </div>
-      </div>
-      <div class="card-footer">
-        <div class="card-meta">⏱ <span>~30 min</span> &nbsp;·&nbsp; 10 activities</div>
-        <a class="btn-start" href="https://thetamoul.github.io/articles-definis-lesson/" target="_blank" rel="noopener noreferrer">
-          Start
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        </a>
-      </div>
-    </div>
+  </main>
 
-    <div class="card-coming">
-      <div class="coming-icon">📦</div>
-      <span class="badge-soon">Coming soon</span>
-      <h3>Lesson 3 · Les Articles Indéfinis</h3>
-      <p>Un, une, des — with contexts and practice</p>
-    </div>
-
-    <div class="card-coming">
-      <div class="coming-icon">📦</div>
-      <span class="badge-soon">Coming soon</span>
-      <h3>Lesson 4 · Les Nombres</h3>
-      <p>Numbers 0–100 with interactive drills</p>
-    </div>
-
-    <div class="card-coming">
-      <div class="coming-icon">📦</div>
-      <span class="badge-soon">Coming soon</span>
-      <h3>Lesson 5 · Le Verbe Être</h3>
-      <p>Je suis, tu es… — conjugation in context</p>
-    </div>
-
-  </div>
-
-  <div class="guide-box">
-    <div class="guide-icon">➕</div>
-    <div>
-      <h3>How to add a new lesson</h3>
-      <p>
-        Create a new GitHub repository (e.g. <code>articles-indefinis-lesson</code>), upload your <code>index.html</code>,
-        then enable <strong>GitHub Pages</strong> under Settings → Pages → Branch: main.
-        Your lesson instantly appears at <code>thetamoul.github.io/articles-indefinis-lesson/</code>.
-        Finally, replace a "Coming soon" card in this hub page with a live lesson card pointing to the new URL.
-      </p>
-    </div>
-  </div>
-</main>
-
-<footer>
-  <p>Built with ❤️ by <strong>Tamoul</strong> &nbsp;·&nbsp; French Teacher &nbsp;·&nbsp; London &nbsp;|&nbsp;
-  <a href="https://github.com/thetamoul" target="_blank" rel="noopener noreferrer">github.com/thetamoul</a></p>
-</footer>
+  <footer>
+    <p>Built with ❤️ by <strong>Paul</strong> &nbsp;·&nbsp; French Teacher &nbsp;·&nbsp; London &nbsp;|&nbsp;
+    <a href="https://github.com/thetamoul" target="_blank" rel="noopener noreferrer">github.com/thetamoul</a></p>
+  </footer>
+</div>
 
 <script>
-window.addEventListener('load',()=>{setTimeout(()=>{document.getElementById('courseBar').style.width='20%'},400)});
+// ── State ──
+var state = {
+  name: '',
+  level: 'A1',
+  theme: 'light',
+  done: [false, false] // lesson 1, lesson 2
+};
+
+// ── Dark mode ──
+const html = document.documentElement;
+const btnDark = document.getElementById('darkToggle');
+const iconSun = document.getElementById('iconSun');
+const iconMoon = document.getElementById('iconMoon');
+
+function applyTheme(t) {
+  state.theme = t;
+  html.setAttribute('data-theme', t);
+  iconSun.style.display = t === 'dark' ? 'block' : 'none';
+  iconMoon.style.display = t === 'dark' ? 'none' : 'block';
+}
+
+// Default to system preference
+applyTheme(matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+
+btnDark.addEventListener('click', () => {
+  applyTheme(state.theme === 'dark' ? 'light' : 'dark');
+});
+
+// ── Login enable/disable ──
+const inputName = document.getElementById('studentName');
+const btnSignIn = document.getElementById('btnSignIn');
+
+inputName.addEventListener('input', () => {
+  btnSignIn.disabled = inputName.value.trim().length < 1;
+});
+inputName.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && inputName.value.trim().length > 0) signIn();
+});
+
+// ── Sign in ──
+function signIn() {
+  var n = inputName.value.trim();
+  var lvl = document.getElementById('studentLevel').value;
+  if (!n) return;
+  state.name = n;
+  state.level = lvl;
+  showPortal();
+}
+btnSignIn.addEventListener('click', signIn);
+
+// Google button — show notice (real OAuth needs a backend)
+document.getElementById('btnGoogle').addEventListener('click', () => {
+  alert('Google sign-in requires a backend server.\n\nFor now, please enter your name below — your progress will be tracked for this session. Full Google login coming soon!');
+});
+
+// ── Show portal ──
+function showPortal() {
+  document.getElementById('loginView').classList.remove('active');
+  document.getElementById('portalView').classList.add('active');
+
+  var first = state.name.split(' ')[0];
+  var initial = first.charAt(0).toUpperCase();
+
+  document.getElementById('heroName').textContent = first;
+  document.getElementById('userNameDisplay').textContent = first;
+  document.getElementById('userAvatar').textContent = initial;
+
+  // Update lesson links with student name param
+  document.getElementById('startL1').href = 'https://thetamoul.github.io/bonjour-vocab-lesson/?student=' + encodeURIComponent(state.name);
+  document.getElementById('startL2').href = 'https://thetamoul.github.io/articles-definis-grammar/?student=' + encodeURIComponent(state.name);
+
+  document.getElementById('markDoneArea').style.display = 'block';
+
+  updateProgress();
+
+  // Animate progress bar after short delay
+  setTimeout(() => { updateProgress(); }, 400);
+}
+
+// ── Sign out ──
+document.getElementById('btnLogout').addEventListener('click', () => {
+  state = { name:'', level:'A1', theme: state.theme, done:[false, false] };
+  document.getElementById('portalView').classList.remove('active');
+  document.getElementById('loginView').classList.add('active');
+  document.getElementById('studentName').value = '';
+  btnSignIn.disabled = true;
+});
+
+// ── Progress ──
+function markDone(lessonIdx) {
+  if (lessonIdx === 0) {
+    state.done = [false, false];
+  } else {
+    state.done[lessonIdx - 1] = true;
+  }
+  updateProgress();
+}
+
+function updateProgress() {
+  var total = state.done.length; // 2 live lessons
+  var completed = state.done.filter(Boolean).length;
+  var pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+  // Hero bar
+  document.getElementById('heroProgressFill').style.width = pct + '%';
+  document.getElementById('heroProgressPct').textContent = pct + '%';
+  document.getElementById('completedCount').textContent = completed;
+
+  // Per-card bars
+  state.done.forEach(function(done, i) {
+    var barEl = document.getElementById('bar' + (i+1));
+    var pctEl = document.getElementById('pct' + (i+1));
+    if (barEl) barEl.style.width = done ? '100%' : '0%';
+    if (pctEl) pctEl.textContent = done ? '100% ✓' : 'Not started';
+    if (pctEl) pctEl.style.color = done ? '#22c55e' : '';
+  });
+
+  // Update start button labels
+  state.done.forEach(function(done, i) {
+    var btn = document.getElementById('startL' + (i+1));
+    if (!btn) return;
+    if (done) {
+      btn.innerHTML = 'Revisit <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:13px;height:13px"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+      btn.style.background = 'linear-gradient(135deg,#16a34a,#22c55e)';
+    }
+  });
+}
+
+// ── Lesson links show mark-done area ──
+document.querySelectorAll('.btn-go').forEach(function(a) {
+  a.addEventListener('click', function() {
+    setTimeout(function() {
+      document.getElementById('markDoneArea').scrollIntoView({ behavior:'smooth', block:'nearest' });
+    }, 300);
+  });
+});
 </script>
 </body>
 </html>
