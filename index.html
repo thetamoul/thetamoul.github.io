@@ -1,336 +1,553 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>French with Paul</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>French with Paul — Student Portal</title>
+
+<!-- Firebase SDK (compat) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+/* ── TOKENS ─────────────────────────────────────────────────── */
 :root{
-  --bg:#f0f4ff;--surface:#ffffff;--surface2:#f8f9ff;--border:#e2e8f8;
-  --text:#1a1f3c;--muted:#6b7280;--faint:#9ca3af;
-  --purple:#6c63ff;--purple2:#8b85ff;--pink:#f472b6;--green:#10b981;
-  --red:#ef4444;--gold:#f59e0b;
-  --radius:1rem;--shadow:0 4px 24px rgba(108,99,255,.12);
+  --bg:#f5f3ff;--surface:#ffffff;--surface2:#eef0ff;
+  --border:rgba(100,80,200,.13);
+  --text:#1a1535;--muted:#6b6890;--faint:#b0adc8;
+  --primary:#6c3fe8;--primary-h:#5228d4;--primary-light:#ede8ff;
+  --success:#22c55e;--error:#ef4444;--warning:#f59e0b;
+  --pink:#ec4899;--pink-light:#fdf2f8;
+  --radius:14px;--radius-lg:20px;--radius-full:9999px;
+  --shadow:0 4px 24px rgba(108,63,232,.10);
+  --shadow-lg:0 12px 40px rgba(108,63,232,.16);
   --font:'Nunito',sans-serif;
+  --transition:200ms cubic-bezier(.16,1,.3,1);
 }
 [data-theme="dark"]{
-  --bg:#0f1021;--surface:#1a1d35;--surface2:#22264a;--border:#2d3159;
-  --text:#e8eaf6;--muted:#9fa8da;--faint:#5c6bc0;
+  --bg:#0f0c1a;--surface:#1a1530;--surface2:#231e3a;
+  --border:rgba(160,130,255,.15);
+  --text:#e8e4ff;--muted:#9b95c0;--faint:#5a5575;
+  --primary:#9b72f8;--primary-h:#b38dff;--primary-light:#2a1f4a;
+  --pink:#f472b6;--pink-light:#2d1529;
   --shadow:0 4px 24px rgba(0,0,0,.4);
+  --shadow-lg:0 12px 40px rgba(0,0,0,.5);
 }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100dvh;transition:background .3s,color .3s}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100dvh;transition:background var(--transition),color var(--transition)}
 img{display:block;max-width:100%;height:auto}
-button{cursor:pointer;font-family:var(--font)}
+button{cursor:pointer;border:none;background:none;font:inherit;color:inherit}
 
-/* THEME TOGGLE */
-#themeBtn{position:fixed;top:1rem;right:1rem;z-index:999;width:42px;height:42px;border-radius:50%;border:none;background:var(--surface);box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;font-size:1.2rem;transition:all .2s}
-#themeBtn:hover{transform:scale(1.1)}
+/* ── DARK MODE TOGGLE ───────────────────────────────────────── */
+#theme-toggle{
+  position:fixed;top:16px;right:16px;z-index:1000;
+  width:44px;height:44px;border-radius:var(--radius-full);
+  background:var(--surface);border:1.5px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:var(--shadow);transition:all var(--transition);font-size:20px;
+}
+#theme-toggle:hover{transform:scale(1.08);box-shadow:var(--shadow-lg)}
 
-/* LOGIN SCREEN */
-#loginScreen{min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:2rem;background:linear-gradient(135deg,#667eea 0%,#764ba2 50%,#f093fb 100%)}
-.login-card{background:var(--surface);border-radius:2rem;padding:3rem 2.5rem;max-width:420px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.2);text-align:center}
-.login-logo{width:72px;height:72px;background:linear-gradient(135deg,#667eea,#f093fb);border-radius:1.5rem;display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 1.5rem;box-shadow:0 8px 24px rgba(102,126,234,.4)}
-.login-card h1{font-size:1.8rem;font-weight:900;color:var(--text);margin-bottom:.5rem}
-.login-card p{color:var(--muted);font-size:.95rem;margin-bottom:2rem;line-height:1.6}
-.btn-google{width:100%;padding:.9rem 1.5rem;border-radius:var(--radius);border:2px solid var(--border);background:var(--surface);color:var(--text);font-size:1rem;font-weight:700;display:flex;align-items:center;justify-content:center;gap:.75rem;transition:all .2s;margin-bottom:1.25rem}
-.btn-google:hover{border-color:var(--purple);background:var(--surface2);transform:translateY(-2px);box-shadow:var(--shadow)}
-.google-icon{width:20px;height:20px}
-.divider{display:flex;align-items:center;gap:1rem;color:var(--faint);font-size:.85rem;margin-bottom:1.25rem}
+/* ── SCREENS ────────────────────────────────────────────────── */
+.screen{display:none;min-height:100dvh}
+.screen.active{display:flex}
+
+/* ── LOGIN SCREEN ───────────────────────────────────────────── */
+#login-screen{
+  align-items:center;justify-content:center;
+  background:linear-gradient(135deg,#6c3fe8 0%,#ec4899 100%);
+  padding:24px;
+}
+.login-card{
+  background:var(--surface);border-radius:var(--radius-lg);
+  padding:48px 40px;max-width:420px;width:100%;
+  box-shadow:var(--shadow-lg);text-align:center;
+}
+.login-logo{
+  width:72px;height:72px;border-radius:var(--radius-full);
+  background:linear-gradient(135deg,#6c3fe8,#ec4899);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 20px;font-size:32px;
+}
+.login-card h1{font-size:26px;font-weight:800;margin-bottom:6px}
+.login-card p{color:var(--muted);margin-bottom:32px;font-size:15px}
+.btn-google{
+  width:100%;padding:14px;border-radius:var(--radius);
+  border:1.5px solid var(--border);background:var(--surface);
+  font-weight:700;font-size:15px;display:flex;align-items:center;
+  justify-content:center;gap:10px;transition:all var(--transition);
+  margin-bottom:16px;
+}
+.btn-google:hover{background:var(--surface2);border-color:var(--primary);box-shadow:var(--shadow)}
+.btn-google svg{flex-shrink:0}
+.divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--faint);font-size:13px}
 .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
-.login-name-input{width:100%;padding:.85rem 1.2rem;border-radius:var(--radius);border:2px solid var(--border);background:var(--surface2);color:var(--text);font-size:1rem;font-family:var(--font);font-weight:600;margin-bottom:.75rem;transition:border-color .2s;outline:none}
-.login-name-input:focus{border-color:var(--purple)}
-.login-name-input::placeholder{color:var(--faint)}
-.btn-enter{width:100%;padding:.9rem;border-radius:var(--radius);border:none;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:1rem;font-weight:800;transition:all .2s;letter-spacing:.02em}
-.btn-enter:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(102,126,234,.5)}
-.login-error{color:var(--red);font-size:.85rem;margin-top:.75rem;display:none}
+.form-group{text-align:left;margin-bottom:14px}
+.form-group label{display:block;font-weight:700;font-size:13px;margin-bottom:6px;color:var(--muted)}
+.form-group input,.form-group select{
+  width:100%;padding:12px 14px;border-radius:var(--radius);
+  border:1.5px solid var(--border);background:var(--surface2);
+  font:inherit;font-size:15px;color:var(--text);
+  transition:border-color var(--transition);
+}
+.form-group input:focus,.form-group select:focus{outline:none;border-color:var(--primary)}
+.btn-primary{
+  width:100%;padding:14px;border-radius:var(--radius);
+  background:linear-gradient(135deg,var(--primary),var(--pink));
+  color:#fff;font-weight:800;font-size:16px;
+  transition:all var(--transition);margin-top:6px;
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.btn-primary:active{transform:translateY(0)}
+#login-error{color:var(--error);font-size:13px;margin-top:10px;display:none}
 
-/* PORTAL */
-#portalScreen{display:none;min-height:100dvh;padding-bottom:3rem}
-.portal-header{background:linear-gradient(135deg,#667eea 0%,#764ba2 60%,#f093fb 100%);padding:2rem 1.5rem 3rem;position:relative;overflow:hidden}
-.portal-header::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:40px;background:var(--bg);border-radius:40px 40px 0 0}
-.header-inner{max-width:800px;margin:0 auto}
-.user-row{display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem}
-.user-avatar{width:52px;height:52px;border-radius:50%;border:3px solid rgba(255,255,255,.6);object-fit:cover;background:rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:800;color:#fff;flex-shrink:0;overflow:hidden}
-.user-info h2{color:#fff;font-size:1.2rem;font-weight:800}
-.user-info p{color:rgba(255,255,255,.75);font-size:.85rem}
-.btn-signout{margin-left:auto;padding:.4rem .9rem;border-radius:2rem;border:2px solid rgba(255,255,255,.4);background:transparent;color:#fff;font-size:.8rem;font-weight:700;transition:all .2s}
-.btn-signout:hover{background:rgba(255,255,255,.15)}
-.progress-section{background:rgba(255,255,255,.15);backdrop-filter:blur(8px);border-radius:1.25rem;padding:1.25rem 1.5rem;border:1px solid rgba(255,255,255,.25)}
-.progress-label{display:flex;justify-content:space-between;align-items:center;color:#fff;font-size:.9rem;font-weight:700;margin-bottom:.75rem}
-.progress-pct{font-size:1.5rem;font-weight:900}
-.progress-bar-bg{height:12px;background:rgba(255,255,255,.25);border-radius:99px;overflow:hidden}
-.progress-bar-fill{height:100%;background:linear-gradient(90deg,#a8ff78,#78ffd6);border-radius:99px;transition:width .8s cubic-bezier(.34,1.56,.64,1);width:0%}
-.progress-subtitle{color:rgba(255,255,255,.7);font-size:.8rem;margin-top:.5rem}
+/* ── PORTAL SCREEN ──────────────────────────────────────────── */
+#portal-screen{flex-direction:column}
 
-/* LESSONS GRID */
-.lessons-wrap{max-width:800px;margin:0 auto;padding:1.5rem}
-.section-title{font-size:1.1rem;font-weight:800;color:var(--text);margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
-.lessons-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(340px,100%),1fr));gap:1.25rem}
-.lesson-card{background:var(--surface);border-radius:1.5rem;padding:1.5rem;border:2px solid var(--border);box-shadow:var(--shadow);transition:all .25s;position:relative;overflow:hidden}
-.lesson-card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(108,99,255,.2);border-color:var(--purple)}
-.lesson-card.done{border-color:var(--green)}
-.lesson-card.done::after{content:'✓';position:absolute;top:1rem;right:1rem;width:28px;height:28px;background:var(--green);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:900}
-.lesson-badge{display:inline-flex;align-items:center;gap:.4rem;padding:.3rem .8rem;border-radius:99px;font-size:.75rem;font-weight:800;margin-bottom:.75rem;letter-spacing:.03em}
-.badge-a1{background:linear-gradient(135deg,#667eea22,#764ba222);color:var(--purple)}
-.lesson-title{font-size:1.05rem;font-weight:800;color:var(--text);margin-bottom:.4rem}
-.lesson-desc{font-size:.85rem;color:var(--muted);line-height:1.5;margin-bottom:1rem}
-.lesson-meta{display:flex;align-items:center;gap:.5rem;font-size:.78rem;color:var(--faint);margin-bottom:1rem}
-.lesson-progress-bar{height:6px;background:var(--border);border-radius:99px;overflow:hidden;margin-bottom:1rem}
-.lesson-progress-fill{height:100%;border-radius:99px;transition:width .6s ease;background:linear-gradient(90deg,var(--purple),var(--pink))}
-.lesson-progress-fill.done-fill{background:linear-gradient(90deg,var(--green),#a8ff78)}
-.lesson-actions{display:flex;gap:.75rem}
-.btn-start{flex:1;padding:.7rem 1rem;border-radius:.75rem;border:none;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:.9rem;font-weight:800;transition:all .2s;text-decoration:none;text-align:center}
-.btn-start:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(102,126,234,.4)}
-.btn-start.revisit{background:linear-gradient(135deg,var(--green),#34d399)}
-.btn-done{padding:.7rem 1rem;border-radius:.75rem;border:2px solid var(--border);background:transparent;color:var(--muted);font-size:.85rem;font-weight:700;transition:all .2s;white-space:nowrap}
-.btn-done:hover{border-color:var(--green);color:var(--green)}
-.btn-done.marked{background:var(--green);border-color:var(--green);color:#fff}
-.coming-soon{opacity:.5;pointer-events:none}
-.coming-soon .btn-start{background:var(--border);color:var(--muted)}
+/* Header */
+.portal-header{
+  background:linear-gradient(135deg,#6c3fe8 0%,#ec4899 100%);
+  padding:32px 24px 40px;position:relative;overflow:hidden;
+}
+.portal-header::after{
+  content:'';position:absolute;bottom:-20px;left:0;right:0;height:40px;
+  background:var(--bg);border-radius:40px 40px 0 0;
+}
+.header-inner{max-width:860px;margin:0 auto}
+.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.header-top h1{color:#fff;font-size:22px;font-weight:800}
+.btn-signout{
+  background:rgba(255,255,255,.2);color:#fff;padding:8px 16px;
+  border-radius:var(--radius-full);font-weight:700;font-size:13px;
+  transition:all var(--transition);border:1.5px solid rgba(255,255,255,.3);
+}
+.btn-signout:hover{background:rgba(255,255,255,.35)}
+.greeting{color:rgba(255,255,255,.9);font-size:28px;font-weight:900;margin-bottom:6px}
+.greeting span{color:#fff}
+.subtitle{color:rgba(255,255,255,.75);font-size:15px;margin-bottom:20px}
+/* Progress bar */
+.progress-wrap{background:rgba(255,255,255,.2);border-radius:var(--radius-full);height:10px;overflow:hidden}
+.progress-fill{height:100%;background:#fff;border-radius:var(--radius-full);transition:width .6s ease}
+.progress-label{display:flex;justify-content:space-between;margin-top:8px}
+.progress-label span{color:rgba(255,255,255,.8);font-size:13px;font-weight:700}
 
-/* RESPONSIVE */
-@media(max-width:480px){
-  .login-card{padding:2rem 1.5rem}
-  .portal-header{padding:1.5rem 1rem 2.5rem}
-  .lessons-wrap{padding:1rem}
+/* Content */
+.portal-content{max-width:860px;margin:0 auto;padding:32px 20px 80px;width:100%}
+.section-title{font-size:18px;font-weight:800;margin-bottom:16px;color:var(--text)}
+
+/* Lesson cards grid */
+.lessons-grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(min(380px,100%),1fr))}
+.lesson-card{
+  background:var(--surface);border-radius:var(--radius-lg);
+  border:1.5px solid var(--border);box-shadow:var(--shadow);
+  overflow:hidden;transition:all var(--transition);
+}
+.lesson-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+.lesson-thumb{
+  height:120px;
+  background:linear-gradient(135deg,#6c3fe8,#ec4899);
+  display:flex;align-items:center;justify-content:center;
+  font-size:48px;position:relative;
+}
+.lesson-thumb.vocab{background:linear-gradient(135deg,#06b6d4,#3b82f6)}
+.lesson-thumb.grammar{background:linear-gradient(135deg,#6c3fe8,#ec4899)}
+.lesson-badge{
+  position:absolute;top:10px;left:10px;
+  background:rgba(255,255,255,.25);color:#fff;
+  border-radius:var(--radius-full);padding:4px 10px;
+  font-size:11px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;
+  backdrop-filter:blur(4px);
+}
+.lesson-done-badge{
+  position:absolute;top:10px;right:10px;
+  background:#22c55e;color:#fff;
+  border-radius:var(--radius-full);padding:4px 10px;
+  font-size:11px;font-weight:800;
+}
+.lesson-body{padding:16px 18px}
+.lesson-body h3{font-size:16px;font-weight:800;margin-bottom:4px}
+.lesson-body p{font-size:13px;color:var(--muted);margin-bottom:12px}
+.lesson-progress{height:6px;background:var(--surface2);border-radius:var(--radius-full);overflow:hidden;margin-bottom:14px}
+.lesson-progress-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--pink));border-radius:var(--radius-full);transition:width .5s ease}
+.lesson-footer{display:flex;align-items:center;justify-content:space-between}
+.lesson-meta{font-size:12px;color:var(--faint);font-weight:600}
+.btn-lesson{
+  padding:8px 20px;border-radius:var(--radius-full);
+  background:var(--primary);color:#fff;font-weight:800;font-size:13px;
+  text-decoration:none;display:inline-block;
+  transition:all var(--transition);
+}
+.btn-lesson:hover{background:var(--primary-h);transform:translateY(-1px)}
+.btn-lesson.done{background:var(--success)}
+/* Mark done btn */
+.btn-mark{
+  width:100%;margin-top:10px;padding:9px;border-radius:var(--radius-full);
+  border:2px solid var(--border);font-weight:700;font-size:13px;
+  color:var(--muted);transition:all var(--transition);
+}
+.btn-mark:hover{border-color:var(--success);color:var(--success)}
+.btn-mark.active{background:var(--success);border-color:var(--success);color:#fff}
+
+/* Coming soon card */
+.lesson-card.coming-soon{opacity:.6;pointer-events:none}
+.coming-badge{background:var(--surface2);color:var(--muted);border-radius:var(--radius-full);padding:8px 20px;font-size:13px;font-weight:700}
+
+/* Stats row */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px}
+.stat-card{background:var(--surface);border-radius:var(--radius);border:1.5px solid var(--border);padding:16px;text-align:center}
+.stat-card .num{font-size:28px;font-weight:900;color:var(--primary)}
+.stat-card .lbl{font-size:12px;color:var(--muted);font-weight:700;margin-top:2px}
+
+/* Loading overlay */
+#loading{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:999;flex-direction:column;gap:12px}
+.spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#loading p{color:var(--muted);font-weight:600;font-size:15px}
+
+@media(max-width:600px){
+  .login-card{padding:32px 24px}
+  .stats-row{grid-template-columns:1fr 1fr}
+  .stats-row .stat-card:last-child{grid-column:1/-1}
 }
 </style>
 </head>
 <body>
 
-<!-- THEME TOGGLE -->
-<button id="themeBtn" aria-label="Toggle dark mode">🌙</button>
+<!-- DARK MODE TOGGLE (always visible) -->
+<button id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">🌙</button>
 
-<!-- ═══════════════════════════════ LOGIN SCREEN ═══════════════════════════════ -->
-<div id="loginScreen">
+<!-- LOADING -->
+<div id="loading">
+  <div class="spinner"></div>
+  <p>Loading your lessons…</p>
+</div>
+
+<!-- ═══════════════ LOGIN SCREEN ═══════════════ -->
+<div id="login-screen" class="screen">
   <div class="login-card">
     <div class="login-logo">🇫🇷</div>
     <h1>French with Paul</h1>
-    <p>Sign in to track your progress across all lessons and pick up exactly where you left off.</p>
+    <p>Sign in to track your progress across all lessons</p>
 
-    <button class="btn-google" id="btnGoogle">
-      <svg class="google-icon" viewBox="0 0 48 48">
-        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-        <path fill="none" d="M0 0h48v48H0z"/>
+    <!-- Google Sign-In -->
+    <button class="btn-google" id="btn-google">
+      <svg width="20" height="20" viewBox="0 0 48 48" fill="none">
+        <path fill="#4285F4" d="M47.5 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h13.2c-.6 3-2.3 5.5-4.9 7.2v6h7.9c4.6-4.3 7.3-10.6 7.3-17.2z"/>
+        <path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.9-6c-2.1 1.4-4.9 2.3-8 2.3-6.1 0-11.3-4.1-13.2-9.7H2.6v6.1C6.6 42.6 14.7 48 24 48z"/>
+        <path fill="#FBBC05" d="M10.8 28.8c-.5-1.4-.7-2.9-.7-4.4s.2-3 .7-4.4v-6.1H2.6A23.9 23.9 0 0 0 0 24c0 3.9.9 7.5 2.6 10.8l8.2-6z"/>
+        <path fill="#EA4335" d="M24 9.5c3.4 0 6.5 1.2 8.9 3.5l6.7-6.7C35.9 2.1 30.5 0 24 0 14.7 0 6.6 5.4 2.6 13.2l8.2 6.1C12.7 13.6 17.9 9.5 24 9.5z"/>
       </svg>
       Continue with Google
     </button>
 
     <div class="divider">or enter your name</div>
 
-    <input class="login-name-input" type="text" id="nameInput" placeholder="Your first name (e.g. Sophie)" maxlength="40" autocomplete="given-name">
-    <button class="btn-enter" id="btnEnter">Enter my lessons →</button>
-    <div class="login-error" id="loginError">Please enter your name to continue.</div>
+    <div class="form-group">
+      <label for="student-name">Your first name</label>
+      <input type="text" id="student-name" placeholder="e.g. Sophie" autocomplete="given-name"/>
+    </div>
+    <div class="form-group">
+      <label for="student-level">Your level</label>
+      <select id="student-level">
+        <option value="A1">A1 — Beginner</option>
+        <option value="A1+">A1+ — Beginner+</option>
+        <option value="A2">A2 — Elementary</option>
+      </select>
+    </div>
+    <button class="btn-primary" id="btn-name-login">Enter my lessons →</button>
+    <p id="login-error"></p>
   </div>
 </div>
 
-<!-- ═══════════════════════════════ PORTAL SCREEN ═══════════════════════════════ -->
-<div id="portalScreen">
+<!-- ═══════════════ PORTAL SCREEN ═══════════════ -->
+<div id="portal-screen" class="screen">
+
   <div class="portal-header">
     <div class="header-inner">
-      <div class="user-row">
-        <div class="user-avatar" id="userAvatar">?</div>
-        <div class="user-info">
-          <h2 id="userGreeting">Bonjour !</h2>
-          <p id="userEmail"></p>
-        </div>
-        <button class="btn-signout" id="btnSignOut">Sign out</button>
+      <div class="header-top">
+        <h1>🇫🇷 French with Paul</h1>
+        <button class="btn-signout" id="btn-signout">Sign out</button>
       </div>
-      <div class="progress-section">
-        <div class="progress-label">
-          <span>🎯 Your progress</span>
-          <span class="progress-pct" id="pctLabel">0%</span>
-        </div>
-        <div class="progress-bar-bg">
-          <div class="progress-bar-fill" id="globalBar"></div>
-        </div>
-        <div class="progress-subtitle" id="progressSubtitle">Complete lessons to fill your progress bar</div>
+      <div class="greeting">Bonjour, <span id="greeting-name">there</span>! 👋</div>
+      <div class="subtitle" id="portal-subtitle">Keep up the great work with your French!</div>
+      <div class="progress-wrap">
+        <div class="progress-fill" id="global-bar" style="width:0%"></div>
+      </div>
+      <div class="progress-label">
+        <span id="progress-text">0 / 2 lessons completed</span>
+        <span id="progress-pct">0%</span>
       </div>
     </div>
   </div>
 
-  <div class="lessons-wrap">
-    <div class="section-title">📚 Your A1 Lessons</div>
-    <div class="lessons-grid" id="lessonsGrid"></div>
+  <div class="portal-content">
+
+    <!-- Stats row -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="num" id="stat-done">0</div>
+        <div class="lbl">Completed</div>
+      </div>
+      <div class="stat-card">
+        <div class="num" id="stat-total">2</div>
+        <div class="lbl">Available</div>
+      </div>
+      <div class="stat-card">
+        <div class="num" id="stat-streak">A1</div>
+        <div class="lbl">Level</div>
+      </div>
+    </div>
+
+    <p class="section-title">Your A1 Lessons</p>
+
+    <div class="lessons-grid" id="lessons-grid">
+      <!-- Lesson 1 -->
+      <div class="lesson-card" id="card-lesson1">
+        <div class="lesson-thumb vocab">
+          📚
+          <span class="lesson-badge">Lesson 1</span>
+          <span class="lesson-done-badge" id="done1" style="display:none">✓ Done</span>
+        </div>
+        <div class="lesson-body">
+          <h3>Vocabulaire — Bonjour !</h3>
+          <p>Classroom objects, greetings & first words. Flip cards, drag & drop, photo quiz.</p>
+          <div class="lesson-progress"><div class="lesson-progress-fill" id="lp1" style="width:0%"></div></div>
+          <div class="lesson-footer">
+            <span class="lesson-meta">🕐 ~20 min · 8 activities</span>
+            <a href="https://thetamoul.github.io/bonjour-vocab-lesson/" target="_blank" rel="noopener noreferrer" class="btn-lesson" id="btn1">Start →</a>
+          </div>
+          <button class="btn-mark" id="mark1" onclick="toggleDone('lesson1')">✓ Mark as completed</button>
+        </div>
+      </div>
+
+      <!-- Lesson 2 -->
+      <div class="lesson-card" id="card-lesson2">
+        <div class="lesson-thumb grammar">
+          📖
+          <span class="lesson-badge">Lesson 2</span>
+          <span class="lesson-done-badge" id="done2" style="display:none">✓ Done</span>
+        </div>
+        <div class="lesson-body">
+          <h3>Grammaire — Les Articles Définis</h3>
+          <p>Le, la, l', les — definite articles with interactive exercises and real photos.</p>
+          <div class="lesson-progress"><div class="lesson-progress-fill" id="lp2" style="width:0%"></div></div>
+          <div class="lesson-footer">
+            <span class="lesson-meta">🕐 ~25 min · 10 activities</span>
+            <a href="https://thetamoul.github.io/articles-definis-grammar/" target="_blank" rel="noopener noreferrer" class="btn-lesson" id="btn2">Start →</a>
+          </div>
+          <button class="btn-mark" id="mark2" onclick="toggleDone('lesson2')">✓ Mark as completed</button>
+        </div>
+      </div>
+
+      <!-- Coming soon -->
+      <div class="lesson-card coming-soon">
+        <div class="lesson-thumb" style="background:linear-gradient(135deg,#6b7280,#9ca3af)">
+          🔒
+          <span class="lesson-badge">Lesson 3</span>
+        </div>
+        <div class="lesson-body">
+          <h3>Coming soon…</h3>
+          <p>Les Articles Indéfinis — un, une, des</p>
+          <div class="lesson-footer">
+            <span class="lesson-meta">🔒 Not yet available</span>
+            <span class="coming-badge">Coming soon</span>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════ FIREBASE + APP LOGIC ═══════════════════════════════ -->
-<script type="module">
-import { initializeApp }                         from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-import { getAnalytics }                          from "https://www.gstatic.com/firebasejs/12.11.0/firebase-analytics.js";
-import { getAuth, GoogleAuthProvider,
-         signInWithPopup, onAuthStateChanged,
-         signOut }                               from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc }     from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
-
-/* ── Firebase init ── */
+<!-- ═══════════════ FIREBASE + APP LOGIC ═══════════════ -->
+<script>
+// ──────────────────────────────────────────────
+// 🔑 FIREBASE CONFIG — paste yours from the console:
+//   Firebase Console → Project Settings → Your apps → SDK setup
+// ──────────────────────────────────────────────
 const firebaseConfig = {
-  apiKey: "AIzaSyBnVNJwye7yLZR91ubz4YvorpR2hc3MWKg",
-  authDomain: "french-with-paul.firebaseapp.com",
-  projectId: "french-with-paul",
-  storageBucket: "french-with-paul.firebasestorage.app",
+  apiKey:            "AIzaSyBnVNJwye7yLZR91ubz4YvorpR2hc3MWKg",
+  authDomain:        "french-with-paul.firebaseapp.com",
+  projectId:         "french-with-paul",
+  storageBucket:     "french-with-paul.firebasestorage.app",
   messagingSenderId: "1059123342588",
-  appId: "1:1059123342588:web:15ba94f9196d2f12a6fb79",
-  measurementId: "G-WYKRH09QJ9"
+  appId:             "1:1059123342588:web:15ba94f9196d2f12a6fb79",
+  measurementId:     "G-WYKRH09QJ9"
 };
-const app       = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-const auth      = getAuth(app);
-const db        = getFirestore(app);
-const gProvider = new GoogleAuthProvider();
 
-/* ── Lesson catalogue ── */
-const LESSONS = [
-  { id:"L01", badge:"A1 · Lesson 1", title:"Bonjour ! Vocabulary",      desc:"Greetings, numbers, classroom objects and your first French conversation.", icon:"👋", url:"https://thetamoul.github.io/bonjour-vocab-lesson/", activities:8 },
-  { id:"L02", badge:"A1 · Lesson 2", title:"Les Articles Définis",       desc:"Master le, la, l' and les with interactive drag-and-drop and photo quizzes.", icon:"📖", url:"https://thetamoul.github.io/articles-definis-grammar/", activities:10 },
-  { id:"L03", badge:"A1 · Lesson 3", title:"Les Articles Indéfinis",     desc:"Un, une, des — building your first French sentences.", icon:"✏️", url:"#", activities:8, soon:true },
-  { id:"L04", badge:"A1 · Lesson 4", title:"Les Couleurs",               desc:"Colours, adjective agreement and describing objects.", icon:"🎨", url:"#", activities:8, soon:true },
-];
+// Init Firebase
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db   = firebase.firestore();
 
-/* ── Theme toggle ── */
-const themeBtn = document.getElementById("themeBtn");
-let dark = window.matchMedia("(prefers-color-scheme:dark)").matches;
-applyTheme();
-themeBtn.addEventListener("click", () => { dark = !dark; applyTheme(); });
-function applyTheme(){ document.documentElement.setAttribute("data-theme", dark?"dark":"light"); themeBtn.textContent = dark ? "☀️" : "🌙"; }
+// ── STATE ─────────────────────────────────────
+let currentUser = null;
+let progress = { lesson1: false, lesson2: false };
+let studentLevel = 'A1';
 
-/* ── In-memory state (fallback for name-only login) ── */
-let currentUser = null; // Firebase user object or {uid,displayName,photoURL,email}
+// ── DARK MODE ─────────────────────────────────
+const html   = document.documentElement;
+const toggle = document.getElementById('theme-toggle');
+let theme = (localStorage.getItem('fwp-theme')) ||
+  (matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light');
 
-/* ── Google Sign-In ── */
-document.getElementById("btnGoogle").addEventListener("click", async () => {
-  try {
-    const result = await signInWithPopup(auth, gProvider);
-    // onAuthStateChanged will handle the rest
-  } catch(e) {
-    if(e.code !== "auth/popup-closed-by-user") {
-      document.getElementById("loginError").textContent = "Google sign-in failed. Please try the name field below.";
-      document.getElementById("loginError").style.display = "block";
+function applyTheme(t){
+  html.setAttribute('data-theme', t);
+  toggle.textContent = t === 'dark' ? '☀️' : '🌙';
+  localStorage.setItem('fwp-theme', t);
+  theme = t;
+}
+applyTheme(theme);
+toggle.addEventListener('click', () => applyTheme(theme === 'dark' ? 'light' : 'dark'));
+
+// ── SCREENS ───────────────────────────────────
+function show(id){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function hideLoading(){ document.getElementById('loading').style.display = 'none'; }
+
+// ── AUTH STATE ────────────────────────────────
+auth.onAuthStateChanged(async user => {
+  hideLoading();
+  if(user){
+    currentUser = user;
+    await loadProgress();
+    renderPortal();
+    show('portal-screen');
+  } else {
+    // Check local guest session
+    const guestName = sessionStorage.getItem('fwp-guest');
+    if(guestName){
+      currentUser = { displayName: guestName, uid: 'guest_'+guestName.toLowerCase(), isGuest: true };
+      studentLevel = sessionStorage.getItem('fwp-level') || 'A1';
+      loadLocalProgress();
+      renderPortal();
+      show('portal-screen');
+    } else {
+      show('login-screen');
     }
   }
 });
 
-/* ── Name-only login ── */
-document.getElementById("btnEnter").addEventListener("click", () => enterByName());
-document.getElementById("nameInput").addEventListener("keydown", e => { if(e.key==="Enter") enterByName(); });
-function enterByName(){
-  const name = document.getElementById("nameInput").value.trim();
-  if(!name){ document.getElementById("loginError").style.display="block"; return; }
-  document.getElementById("loginError").style.display="none";
-  const uid = "guest_" + name.toLowerCase().replace(/\s+/g,"_");
-  currentUser = { uid, displayName:name, photoURL:null, email:"" };
-  loadPortal(currentUser);
-}
-
-/* ── Auth state listener ── */
-onAuthStateChanged(auth, user => {
-  if(user){ currentUser = user; loadPortal(user); }
-  // if null and no currentUser, stay on login screen
+// ── GOOGLE SIGN-IN ────────────────────────────
+document.getElementById('btn-google').addEventListener('click', async () => {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  try {
+    await auth.signInWithPopup(provider);
+  } catch(e){
+    showErr(e.code === 'auth/popup-blocked'
+      ? 'Popup was blocked — please allow popups for this site.'
+      : e.message);
+  }
 });
 
-/* ── Sign out ── */
-document.getElementById("btnSignOut").addEventListener("click", async () => {
-  if(auth.currentUser) await signOut(auth);
+// ── GUEST SIGN-IN ─────────────────────────────
+document.getElementById('btn-name-login').addEventListener('click', () => {
+  const name = document.getElementById('student-name').value.trim();
+  if(!name){ showErr('Please enter your name.'); return; }
+  studentLevel = document.getElementById('student-level').value;
+  sessionStorage.setItem('fwp-guest', name);
+  sessionStorage.setItem('fwp-level', studentLevel);
+  currentUser = { displayName: name, uid: 'guest_'+name.toLowerCase(), isGuest: true };
+  loadLocalProgress();
+  renderPortal();
+  show('portal-screen');
+});
+
+function showErr(msg){
+  const el = document.getElementById('login-error');
+  el.textContent = msg; el.style.display = 'block';
+  setTimeout(() => el.style.display = 'none', 5000);
+}
+
+// ── SIGN OUT ──────────────────────────────────
+document.getElementById('btn-signout').addEventListener('click', async () => {
+  if(currentUser && !currentUser.isGuest) await auth.signOut();
+  sessionStorage.removeItem('fwp-guest');
+  sessionStorage.removeItem('fwp-level');
   currentUser = null;
-  document.getElementById("portalScreen").style.display = "none";
-  document.getElementById("loginScreen").style.display  = "flex";
+  progress = { lesson1: false, lesson2: false };
+  show('login-screen');
 });
 
-/* ── Load portal for a user ── */
-async function loadPortal(user){
-  document.getElementById("loginScreen").style.display  = "none";
-  document.getElementById("portalScreen").style.display = "block";
+// ── PROGRESS: LOAD ────────────────────────────
+async function loadProgress(){
+  if(currentUser.isGuest){ loadLocalProgress(); return; }
+  try {
+    const doc = await db.collection('students').doc(currentUser.uid).get();
+    if(doc.exists){
+      const d = doc.data();
+      progress.lesson1 = !!d.lesson1;
+      progress.lesson2 = !!d.lesson2;
+      studentLevel = d.level || 'A1';
+    }
+  } catch(e){ loadLocalProgress(); }
+}
 
-  // Avatar
-  const avatarEl = document.getElementById("userAvatar");
-  if(user.photoURL){ avatarEl.innerHTML = `<img src="${user.photoURL}" width="52" height="52" alt="${user.displayName}" style="width:52px;height:52px;border-radius:50%;object-fit:cover">`; }
-  else { avatarEl.textContent = (user.displayName||"?")[0].toUpperCase(); }
+function loadLocalProgress(){
+  try {
+    const saved = JSON.parse(localStorage.getItem('fwp-progress-'+currentUser.uid)||'{}');
+    progress.lesson1 = !!saved.lesson1;
+    progress.lesson2 = !!saved.lesson2;
+  } catch(e){}
+}
 
-  document.getElementById("userGreeting").textContent = `Bonjour, ${(user.displayName||"").split(" ")[0]} ! 🇫🇷`;
-  document.getElementById("userEmail").textContent     = user.email || "Guest session";
-
-  // Load progress from Firestore (or empty for guests)
-  let progress = {};
-  if(!user.uid.startsWith("guest_")){
-    try {
-      const snap = await getDoc(doc(db,"students",user.uid));
-      if(snap.exists()) progress = snap.data().progress || {};
-    } catch(e){ console.warn("Firestore read failed:",e); }
+async function saveProgress(){
+  if(!currentUser) return;
+  const data = { lesson1: progress.lesson1, lesson2: progress.lesson2, level: studentLevel, updatedAt: new Date().toISOString() };
+  // Always save to localStorage as fallback
+  try { localStorage.setItem('fwp-progress-'+currentUser.uid, JSON.stringify(data)); } catch(e){}
+  // Save to Firestore if real user
+  if(!currentUser.isGuest){
+    try { await db.collection('students').doc(currentUser.uid).set(data, { merge: true }); } catch(e){}
   }
-
-  renderLessons(progress, user);
 }
 
-/* ── Render lesson cards ── */
-function renderLessons(progress, user){
-  const grid = document.getElementById("lessonsGrid");
-  grid.innerHTML = "";
+// ── TOGGLE DONE ───────────────────────────────
+window.toggleDone = async function(lessonId){
+  progress[lessonId] = !progress[lessonId];
+  await saveProgress();
+  renderPortal();
+};
 
-  LESSONS.forEach(lesson => {
-    const done     = !!progress[lesson.id];
-    const pct      = done ? 100 : 0;
-    const card     = document.createElement("div");
-    card.className = "lesson-card" + (done?" done":"") + (lesson.soon?" coming-soon":"");
-    card.innerHTML = `
-      <div class="lesson-badge badge-a1">${lesson.icon} ${lesson.badge}</div>
-      <div class="lesson-title">${lesson.title}</div>
-      <div class="lesson-desc">${lesson.desc}</div>
-      <div class="lesson-meta">📝 ${lesson.activities} activities${lesson.soon?" &nbsp;·&nbsp; 🔜 Coming soon":""}</div>
-      <div class="lesson-progress-bar"><div class="lesson-progress-fill ${done?"done-fill":""}" style="width:${pct}%"></div></div>
-      <div class="lesson-actions">
-        <a class="btn-start ${done?"revisit":""}" href="${lesson.soon?"#":lesson.url}" ${lesson.soon?"":"target=\"_blank\" rel=\"noopener noreferrer\""}">${done?"↩ Revisit":"▶ Start lesson"}</a>
-        ${!lesson.soon ? `<button class="btn-done ${done?"marked":""}" data-id="${lesson.id}">${done?"✓ Done":"Mark done"}</button>` : ""}
-      </div>`;
-    grid.appendChild(card);
+// ── RENDER PORTAL ─────────────────────────────
+function renderPortal(){
+  const name = (currentUser.displayName || 'there').split(' ')[0];
+  document.getElementById('greeting-name').textContent = name;
+  studentLevel = sessionStorage.getItem('fwp-level') || studentLevel;
+  document.getElementById('stat-streak').textContent = studentLevel;
+
+  const total = 2;
+  const done  = (progress.lesson1 ? 1 : 0) + (progress.lesson2 ? 1 : 0);
+  const pct   = Math.round((done/total)*100);
+
+  document.getElementById('global-bar').style.width = pct + '%';
+  document.getElementById('progress-text').textContent = done + ' / ' + total + ' lessons completed';
+  document.getElementById('progress-pct').textContent = pct + '%';
+  document.getElementById('stat-done').textContent = done;
+  document.getElementById('portal-subtitle').textContent =
+    done === total ? '🎉 Excellent! You\'ve completed all available lessons!' :
+    done > 0 ? 'Great progress — keep going!' : 'Ready to start learning? Click a lesson below!';
+
+  // Per-lesson cards
+  [['lesson1','lp1','done1','mark1','btn1'],['lesson2','lp2','done2','mark2','btn2']].forEach(([lid,lpId,doneId,markId,btnId]) => {
+    const isDone = progress[lid];
+    document.getElementById(doneId).style.display = isDone ? 'block' : 'none';
+    document.getElementById(lpId).style.width = isDone ? '100%' : '0%';
+    const markBtn = document.getElementById(markId);
+    markBtn.textContent = isDone ? '✓ Completed!' : '✓ Mark as completed';
+    markBtn.classList.toggle('active', isDone);
+    const btn = document.getElementById(btnId);
+    btn.textContent = isDone ? 'Revisit →' : 'Start →';
+    btn.classList.toggle('done', isDone);
   });
-
-  // Mark-done buttons
-  grid.querySelectorAll(".btn-done").forEach(btn => {
-    btn.addEventListener("click", () => markDone(btn.dataset.id, progress, user));
-  });
-
-  updateGlobalBar(progress);
-}
-
-/* ── Mark lesson done ── */
-async function markDone(lessonId, progress, user){
-  progress[lessonId] = true;
-
-  // Save to Firestore if real Google user
-  if(!user.uid.startsWith("guest_")){
-    try {
-      await setDoc(doc(db,"students",user.uid), {
-        displayName: user.displayName,
-        email: user.email,
-        photoURL: user.photoURL||"",
-        progress
-      }, { merge:true });
-    } catch(e){ console.warn("Firestore write failed:",e); }
-  }
-
-  renderLessons(progress, user);
-}
-
-/* ── Global progress bar ── */
-function updateGlobalBar(progress){
-  const total   = LESSONS.filter(l=>!l.soon).length;
-  const done    = LESSONS.filter(l=>!l.soon && progress[l.id]).length;
-  const pct     = total ? Math.round(done/total*100) : 0;
-  document.getElementById("globalBar").style.width     = pct + "%";
-  document.getElementById("pctLabel").textContent      = pct + "%";
-  document.getElementById("progressSubtitle").textContent =
-    done===total && total>0
-      ? "🎉 Excellent ! All lessons completed!"
-      : `${done} of ${total} lessons completed`;
 }
 </script>
 </body>
